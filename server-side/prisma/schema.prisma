@@ -13,33 +13,154 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id String @id @default(cuid())
+model User {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  email String @unique
+  email    String  @unique
   password String?
 
-  name String @default("not specified")
+  name    String @default("not specified")
   picture String @default("/uploads/no-user-imaes.png")
 
-  store Store[] //user can have many stores one to many db connection
+  store     Store[] //user can have many stores (user)one to (sotres)many db connection
+  favorites Product[]
+  reviews   Review[]
+  order     Order[]
 
   @@map("user")
 }
 
 model Store {
-  id String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  title String
-  description String
+  title       String
+  description String?
 
-  user User? @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id]) //connection with table user
+  userId String? @map("user_id") //conn with table user
+
+  products   Product[] //one store can have many products (store)one to (products)many
+  categories Category[]
+  colors     Color[]
+  reviews    Review[]
+  orderItems OrderItem[]
 
   @@map("store")
 }
 
+model Product {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  title       String
+  description String
+  price       Int
+  images      String[]
+
+  store   Store? @relation(fields: [storeId], references: [id])
+  storeId String @map("store_id")
+
+  orderItems OrderItem[]
+  reviews    Review[]
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String    @map("category_id")
+  color      Color?    @relation(fields: [colorId], references: [id])
+  colorId    String?   @map("color_id")
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     String?   @map("user_id")
+
+  @@map("product")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  title       String
+  description String
+
+  products Product[]
+
+  store   Store?  @relation(fields: [storeId], references: [id])
+  storeId String? @map("store_id")
+
+  @@map("category")
+}
+
+model Color {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  name  String
+  value String
+
+  product Product[]
+
+  store   Store?  @relation(fields: [storeId], references: [id])
+  storeId String? @map("store_id")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  text      String
+  rating    Int
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @map("user_id")
+  store     Store?   @relation(fields: [storeId], references: [id])
+  storeId   String?  @map("store_id")
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String? @map("product_id")
+
+  @@map("review")
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  status EnumOrderStatus @default(PENDING)
+
+  items  OrderItem[]
+  total  Int
+  user   User?       @relation(fields: [userId], references: [id])
+  userId String?     @map("user_id")
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  quantity Int
+  price    Int
+
+  order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   String?  @map("order_id")
+  
+  Store     Store?   @relation(fields: [storeId], references: [id])
+  storeId   String?  @map("store_id")
+  
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?  @map("product_id")
+
+  @@map("order_item")
+}
+
+enum EnumOrderStatus {
+  PENDING
+  PAYERD
+}
