@@ -24,10 +24,10 @@ model User {
   name    String @default("not specified")
   picture String @default("/uploads/no-user-imaes.png")
 
-  store     Store[] //user can have many stores (user)one to (sotres)many db connection
+  stores     Store[] //user can have many stores (user)one to (sotres)many db connection
   favorites Product[]
   reviews   Review[]
-  order     Order[]
+  orders     Order[]
 
   @@map("user")
 }
