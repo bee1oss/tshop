@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Bağımlılıkları yükle
-RUN npm install
+#RUN npm install
 
 # Kodları kopyala
 COPY . .
 
 # Prisma client'i üret (optional: build sonrası da olabilir)
-RUN npx prisma generate
+#RUN npx prisma generate
 
 # Uygulamayı build et (isteğe bağlı)
 RUN npm run build
