@@ -106,6 +106,7 @@ model Color {
 
   store   Store?  @relation(fields: [storeId], references: [id])
   storeId String? @map("store_id")
+  @@map("color")
 }
 
 model Review {
