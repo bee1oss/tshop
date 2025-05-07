@@ -1,4 +1,4 @@
-export interface FileResponse{
-    url:string
-    name:string
+export interface FileResponse {
+	url: string
+	name: string
 }
